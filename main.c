@@ -121,18 +121,18 @@ void display_matrix(int P, int M, int N, int *** Arr3D){
 clock_t Insert3_by_slice_sum(int P, int M, int N, int *** Arr3D){
 
     clock_t time_start, time_stop;
-
-    time_start = clock();
-
-    // initialize the slice sum array and index array
+    // Об'ява масиву сум, масиву індексів, формування масиву індексів
     int slice_sum[P];
     int index_arr[P];
+
+    time_start = clock();
+    
     for (int i = 0; i < P; i++) {
         slice_sum[i] = 0;
         index_arr[i] = i;
     }
 
-    // calculate the sum of each slice and store in the slice sum array
+    // Формування масиву сум
     for (int i = 0; i < P; i++) {
         for (int j = 0; j < M; j++) {
             for (int k = 0; k < N; k++) {
@@ -141,7 +141,7 @@ clock_t Insert3_by_slice_sum(int P, int M, int N, int *** Arr3D){
         }
     }
 
-    // sort the slice sum array and index array using insertion sort
+    // Сортування масиву сум з паралельним переміщенням відповідних індексів
     for (int i = 1; i < P; i++) {
         int key = slice_sum[i];
         int index_key = index_arr[i];
@@ -153,64 +153,13 @@ clock_t Insert3_by_slice_sum(int P, int M, int N, int *** Arr3D){
         }
         slice_sum[j + 1] = key;
         index_arr[j + 1] = index_key;
-    }
 
-    // create a temporary array to store the sorted slices
-    int*** temp_arr = malloc(P * sizeof(int**));
-    for (int i = 0; i < P; i++) {
-        temp_arr[i] = malloc(M * sizeof(int*));
-        for (int j = 0; j < M; j++) {
-            temp_arr[i][j] = malloc(N * sizeof(int));
-        }
+        // Перестановка відповідних перерізів у матриці
+        int** temp_slice = Arr3D[index_key];
+        Arr3D[index_key] = Arr3D[j + 1];
+        Arr3D[j + 1] = temp_slice;
     }
-
-    // copy the sorted slices to the temporary array
-    for (int i = 0; i < P; i++) {
-        int index = index_arr[i];
-        for (int j = 0; j < M; j++) {
-            for (int k = 0; k < N; k++) {
-                temp_arr[i][j][k] = Arr3D[index][j][k];
-            }
-        }
-    }
-
-    // copy the sorted slices back to the original array
-    for (int i = 0; i < P; i++) {
-        for (int j = 0; j < M; j++) {
-            for (int k = 0; k < N; k++) {
-                Arr3D[i][j][k] = temp_arr[i][j][k];
-            }
-        }
-    }
-
-    // copy the sorted slices to the temporary array
-    for (int i = 0; i < P; i++) {
-        int index = index_arr[i];
-        for (int j = 0; j < M; j++) {
-            for (int k = 0; k < N; k++) {
-                temp_arr[i][j][k] = Arr3D[index][j][k];
-            }
-        }
-    }
-
-    // copy the sorted slices from the temporary array to the original array
-    for (int i = 0; i < P; i++) {
-        for (int j = 0; j < M; j++) {
-            for (int k = 0; k < N; k++) {
-                Arr3D[i][j][k] = temp_arr[i][j][k];
-            }
-        }
-    }
-
-    // free the memory allocated for the temporary array
-    for (int i = 0; i < P; i++) {
-        for (int j = 0; j < M; j++) {
-            free(temp_arr[i][j]);
-        }
-        free(temp_arr[i]);
-    }
-
-    free(temp_arr);
+    
     
     time_stop = clock();
 
@@ -320,7 +269,7 @@ int main(){
     default:
         break;
     }
-
+    display_matrix(P, M, N, Arr3D);
     
     free_memory(P, M, N, Arr3D);
 
@@ -341,3 +290,22 @@ int main(){
 //     free(Arr3D[k]);
 // }
 // free(Arr3D);
+
+/*
+clock_t Insert3(int *A, int N){
+    int j;
+    clock_t time_start, time_stop;
+    time_start = clock();
+    for(int i=2; i<N+1; i++){
+        A[0]=A[i];
+        j=i;
+        while (A[0]<A[j-1]) {
+            A[j]=A[j-1];
+            j=j-1;
+        }
+        A[j]=A[0];
+    }
+    time_stop = clock();
+    return time_stop - time_start;
+}
+*/
