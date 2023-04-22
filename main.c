@@ -54,6 +54,9 @@ int *** define_matrix(int P, int M, int N){
         for (int i = 0; i < M; i++)
             Arr3D[k][i] = (int*) malloc(N * sizeof(int));
     }
+
+    if (NULL == Arr3D && 4*P*M*N != 0) printf("Allocation was unsuccessful");
+
     return Arr3D;
 }
 
@@ -122,21 +125,21 @@ clock_t Insert3_by_slice_sum(int P, int M, int N, int *** Arr3D){
 
     clock_t time_start, time_stop;
     // Об'ява масиву сум, масиву індексів, формування масиву індексів
-    int slice_sum[P];
-    int index_arr[P];
-
-    time_start = clock();
+    int slice_sum[P+1];
+    int index_arr[P+1];
     
     for (int i = 0; i < P; i++) {
-        slice_sum[i] = 0;
-        index_arr[i] = i;
+        slice_sum[i+1] = 0;
+        index_arr[i+1] = i;
     }
+
+    time_start = clock();
 
     // Формування масиву сум
     for (int i = 0; i < P; i++) {
         for (int j = 0; j < M; j++) {
             for (int k = 0; k < N; k++) {
-                slice_sum[i] += Arr3D[i][j][k];
+                slice_sum[i+1] += Arr3D[i][j][k];
             }
         }
     }
@@ -159,8 +162,7 @@ clock_t Insert3_by_slice_sum(int P, int M, int N, int *** Arr3D){
         Arr3D[index_key] = Arr3D[j + 1];
         Arr3D[j + 1] = temp_slice;
     }
-    
-    
+
     time_stop = clock();
 
     return time_stop - time_start;
@@ -184,19 +186,21 @@ int main(){
     int M = data[2];
     int N = data[3];
 
-    int *** Arr3D = define_matrix(P, M, N);
+    int *** Arr3D;
+    Arr3D = define_matrix(P, M, N);
 
     switch (data[0])
     {
     case 1: // Алгоритм 1 Тип сортування 1
+        
         fill_matrix(P, M, N, Arr3D, 1);
-        printf("%Lf", (long double) Insert3_by_slice_sum(P, M, N, Arr3D));
-
+        printf("%ld", (long double) Insert3_by_slice_sum(P, M, N, Arr3D));
+        
         break;
      
     case 2: // Алгоритм 1 Тип сортування 2
         fill_matrix(P, M, N, Arr3D, 2);
-        printf("%Lf", (long double) Insert3_by_slice_sum(P, M, N, Arr3D));
+        printf("%f", (double) Insert3_by_slice_sum(P, M, N, Arr3D) / CLOCKS_PER_SEC);
 
         break;
 
@@ -209,7 +213,6 @@ int main(){
     case 4: // Алгоритм 1 Тип сортування 4 (всі типи сортування)
         fill_matrix(P, M, N, Arr3D, 1);
         printf("\n%Lf\n", (long double) Insert3_by_slice_sum(P, M, N, Arr3D));
-
         fill_matrix(P, M, N, Arr3D, 2);
         printf("\n%Lf\n", (long double) Insert3_by_slice_sum(P, M, N, Arr3D));
 
@@ -269,7 +272,7 @@ int main(){
     default:
         break;
     }
-    display_matrix(P, M, N, Arr3D);
+    // display_matrix(P, M, N, Arr3D);
     
     free_memory(P, M, N, Arr3D);
 
