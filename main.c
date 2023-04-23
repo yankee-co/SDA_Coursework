@@ -238,7 +238,7 @@ void QuickSort(int *** Arr3D, int * SliceSum, int L, int R){ // Алгоритм сортува
     if (i < R) QuickSort(Arr3D, SliceSum, i, R);
 }
 
-clock_t * QuickSortMeasurement(int P, int M, int N, int *** Arr3D, clock_t * Res){ // Функція для виміру часу витраченого на сортування алгоритмом 24
+clock_t * QuickSortMeasurement(int P, int M, int N, int *** Arr3D, clock_t * Res, int type){ // Функція для виміру часу витраченого на сортування алгоритмом 24
 
     int L = 0;
     int R = P - 1;
@@ -247,6 +247,8 @@ clock_t * QuickSortMeasurement(int P, int M, int N, int *** Arr3D, clock_t * Res
     clock_t time_start, time_stop;
 
     for (int i = 0; i < MEASUREMENTS; i++){
+
+        fill_matrix(P, M, N, Arr3D, type);
 
         time_start = clock();
 
@@ -348,7 +350,7 @@ int main(){
         int *** Arr3D;
         Arr3D = define_matrix(P, M, N);
 
-        clock_t * Res = malloc((sizeof(clock_t) * MEASUREMENTS));
+        clock_t Res[9];
 
         switch (data[0]) // Варіанти виконання програми в залженості від обраних опцій у меню, де кожен case відповідає номеру вибору [1 - 16]
         {
@@ -365,10 +367,10 @@ int main(){
         case 2: // Алгоритм 1 Тип сортування 2
 
             for (int i = 0; i < MEASUREMENTS; i++){
-                fill_matrix(P, M, N, Arr3D, 1);
+                fill_matrix(P, M, N, Arr3D, 2);
                 Res[i] = Insert3(P, M, N, Arr3D);
             }
-            measurements[0] = MeasurementProcessing(Res);
+            measurements[1] = MeasurementProcessing(Res);
 
             break;
 
@@ -458,41 +460,40 @@ int main(){
         
         case 9: // Алгоритм 3 Тип сортування 1
 
-            fill_matrix(P, M, N, Arr3D, 1);
             measurements[6] = MeasurementProcessing(
-            QuickSortMeasurement(P, M, N, Arr3D, Res)
+            QuickSortMeasurement(P, M, N, Arr3D, Res, 1)
             );
 
             break;
 
         case 10: // Алгоритм 3 Тип сортування 2
-            fill_matrix(P, M, N, Arr3D, 2);
+
             measurements[7] = MeasurementProcessing(
-            QuickSortMeasurement(P, M, N, Arr3D, Res)
+            QuickSortMeasurement(P, M, N, Arr3D, Res, 2)
             );
             break;
         
         case 11: // Алгоритм 3 Тип сортування 3
-            fill_matrix(P, M, N, Arr3D, 3);
+
             measurements[8] = MeasurementProcessing(
-            QuickSortMeasurement(P, M, N, Arr3D, Res)
+            QuickSortMeasurement(P, M, N, Arr3D, Res, 3)
             );
             break;
 
         case 12: // Алгоритм 3 Всі типи сортування
-            fill_matrix(P, M, N, Arr3D, 1);
+
             measurements[6] = MeasurementProcessing(
-            QuickSortMeasurement(P, M, N, Arr3D, Res)
+            QuickSortMeasurement(P, M, N, Arr3D, Res, 1)
             );
 
             fill_matrix(P, M, N, Arr3D, 2);
             measurements[7] = MeasurementProcessing(
-            QuickSortMeasurement(P, M, N, Arr3D, Res)
+            QuickSortMeasurement(P, M, N, Arr3D, Res, 2)
             );
 
             fill_matrix(P, M, N, Arr3D, 3);
             measurements[8] = MeasurementProcessing(
-            QuickSortMeasurement(P, M, N, Arr3D, Res)
+            QuickSortMeasurement(P, M, N, Arr3D, Res, 3)
             );
             break;
 
@@ -510,9 +511,8 @@ int main(){
             }
             measurements[3] = MeasurementProcessing(Res);
 
-            fill_matrix(P, M, N, Arr3D, 1);
             measurements[6] = MeasurementProcessing(
-            QuickSortMeasurement(P, M, N, Arr3D, Res)
+            QuickSortMeasurement(P, M, N, Arr3D, Res, 1)
             );
 
             break;
@@ -531,9 +531,8 @@ int main(){
             }
             measurements[4] = MeasurementProcessing(Res);
 
-            fill_matrix(P, M, N, Arr3D, 2);
             measurements[7] = MeasurementProcessing(
-            QuickSortMeasurement(P, M, N, Arr3D, Res)
+            QuickSortMeasurement(P, M, N, Arr3D, Res, 2)
             );
 
             break;
@@ -552,9 +551,8 @@ int main(){
             }
             measurements[5] = MeasurementProcessing(Res);
 
-            fill_matrix(P, M, N, Arr3D, 3);
             measurements[8] = MeasurementProcessing(
-            QuickSortMeasurement(P, M, N, Arr3D, Res)
+            QuickSortMeasurement(P, M, N, Arr3D, Res, 3)
             );
 
             break;
@@ -597,19 +595,16 @@ int main(){
             }
             measurements[5] = MeasurementProcessing(Res);
 
-            fill_matrix(P, M, N, Arr3D, 1);
             measurements[6] = MeasurementProcessing(
-            QuickSortMeasurement(P, M, N, Arr3D, Res)
+            QuickSortMeasurement(P, M, N, Arr3D, Res, 1)
             );
 
-            fill_matrix(P, M, N, Arr3D, 2);
             measurements[7] = MeasurementProcessing(
-            QuickSortMeasurement(P, M, N, Arr3D, Res)
+            QuickSortMeasurement(P, M, N, Arr3D, Res, 2)
             );
 
-            fill_matrix(P, M, N, Arr3D, 3);
             measurements[8] = MeasurementProcessing(
-            QuickSortMeasurement(P, M, N, Arr3D, Res)
+            QuickSortMeasurement(P, M, N, Arr3D, Res, 3)
             );
 
             break;
@@ -619,8 +614,6 @@ int main(){
         }
 
         OutTable(measurements);
-
-        free(Res);
         free_memory(P, M, N, Arr3D);
 
     }
