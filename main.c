@@ -4,7 +4,7 @@
 #include <malloc.h>
 #include <stdlib.h>
 
-int MEASUREMENTS = 10; // Кількість вимірів для кожного алгоритму і кожного типу сортування
+int MEASUREMENTS = 20; // Кількість вимірів для кожного алгоритму і кожного типу сортування
 int rejected_number = 3; // Кількість відкинутих перших вимірів
 int min_max_number = 2; // Кількість відкинутих екстремальних вимірів
 
@@ -350,7 +350,7 @@ int main(){
         int *** Arr3D;
         Arr3D = define_matrix(P, M, N);
 
-        clock_t Res[9];
+        clock_t Res[MEASUREMENTS];
 
         switch (data[0]) // Варіанти виконання програми в залженості від обраних опцій у меню, де кожен case відповідає номеру вибору [1 - 16]
         {
