@@ -4,9 +4,9 @@
 #include <malloc.h>
 #include <stdlib.h>
 
-int MEASUREMENTS = 16; // Кількість вимірів для кожного алгоритму і кожного типу сортування
-int rejected_number = 4; // Кількість відкинутих перших вимірів
-int min_max_number = 4; // Кількість відкинутих екстремальних вимірів
+int MEASUREMENTS = 10; // Кількість вимірів для кожного алгоритму і кожного типу сортування
+int rejected_number = 2; // Кількість відкинутих перших вимірів
+int min_max_number = 2; // Кількість відкинутих екстремальних вимірів
 
 int * menu(int data[4]){
 
@@ -24,129 +24,75 @@ int * menu(int data[4]){
     printf("Алгоритми:\n1. Алгоритм №3\n2. Алгоритм №10\n3. Алгоритм №24\n4. Запустити всі алгоритми\n5. Вийти з програми\n\nОберіть пункт що відповідає бажаному номеру алгоритму: ");
     scanf("%d", &choice1);
 
-    if (choice1 < 1 || choice1 > 4){
-        printf("Невірно введені дані."); exit(0);
+    if (choice1 == 5) exit(1);
+
+    if (choice1 < 1 || choice1 > 5){
+        system("cls");
+        printf("Попадаєте не по тим клавішам ? Спробуйте знову.");
+        Sleep(2500);
+        system("cls");
+        menu(data);
     }
+
+    
 
     printf("\nТип сортування:\n1. Впорядкований\n2. Невпорядкований\n3. Обернено впорядкований\n4. Всі типи сортування\n\nОберіть тип сортування: ");
     scanf("%d", &choice2);
 
     if (choice2 < 1 || choice2 > 4){
-        printf("Невірно введені дані."); exit(0);
+        system("cls");
+        printf("Попадаєте не по тим клавішам ? Спробуйте знову.");
+        Sleep(2500);
+        system("cls");
+        menu(data);
     }
 
     data[0] = choice_matrix[choice1 - 1][choice2 - 1];
     
-    printf("\nОберіть розмірність матриці (P, M, N): \n");
-    printf("Випадок дослідження 1. Форма перерізу - квадрат.\n\n");
-    printf("1. 15000 x 1 x 1\n2. 15000 x 2 x 2\n3. 15000 x 4 x 4\n4. 15000 x 8 x 8\n5. 15000 x 16 x 16\n\n");
-    printf("Випадок дослідження 2. Залежність часу роботи алгоритмів від форми перерізів масива\n\n");
-    printf("6. 12800 x 2 x 800\n7. 12800 x 4 x 400\n8. 12800 x 8 x 200\n9. 12800 x 16 x 100\n10. 12800 x 100 x 16\n11. 12800 x 100 x 8\n12. 12800 x 200 x 4\n13. 12800 x 800 x 2\n14. Задати розмірність власноруч\n\nОпція: ");
+    printf("\nОберіть розмірність матриці (P, M, N): \n1. 50000 x 100 x 100\n2. 25000 x 100 x 100\n3. 10000 x 100 x 100\n4. 1000 x 1000 x 1000\n5. 1000 x 100 x 100\n6. Задати власноруч\n\nОпція: ");
     scanf("%d", &choice1);
 
     switch (choice1)
     {
     case 1:
 
-        data[1] = 15000;
-        data[2] = 1;
-        data[3] = 1;
+        data[1] = 50000;
+        data[2] = 100;
+        data[3] = 100;
 
         break;
     case 2:
 
-        data[1] = 15000;
-        data[2] = 2;
-        data[3] = 2;
+        data[1] = 25000;
+        data[2] = 100;
+        data[3] = 100;
 
         break;
     
     case 3:
 
-        data[1] = 15000;
-        data[2] = 4;
-        data[3] = 4;
+        data[1] = 10000;
+        data[2] = 100;
+        data[3] = 100;
 
         break;
 
     case 4:
 
-        data[1] = 15000;
-        data[2] = 8;
-        data[3] = 8;
+        data[1] = 1000;
+        data[2] = 100;
+        data[3] = 100;
 
         break;
     case 5:
 
-        data[1] = 15000;
-        data[2] = 16;
-        data[3] = 16;
+        data[1] = 1000;
+        data[2] = 10;
+        data[3] = 10;
 
         break;
 
     case 6:
-
-        data[1] = 12800;
-        data[2] = 2;
-        data[3] = 800;
-
-        break;
-    case 7:
-
-        data[1] = 12800;
-        data[2] = 4;
-        data[3] = 400;
-
-        break;
-    
-    case 8:
-
-        data[1] = 12800;
-        data[2] = 8;
-        data[3] = 200;
-
-        break;
-
-    case 9:
-
-        data[1] = 12800;
-        data[2] = 16;
-        data[3] = 100;
-
-        break;
-    case 10:
-
-        data[1] = 12800;
-        data[2] = 100;
-        data[3] = 16;
-
-        break;
-
-    case 11:
-
-        data[1] = 12800;
-        data[2] = 200;
-        data[3] = 8;
-
-        break;
-
-    case 12:
-
-        data[1] = 12800;
-        data[2] = 400;
-        data[3] = 4;
-
-        break;
-
-    case 13:
-
-        data[1] = 12800;
-        data[2] = 800;
-        data[3] = 2;
-
-        break;
-
-    case 14:
 
         printf("\nВведіть значення розмірності матриці (P, M, N): ");
         scanf("%d, %d, %d", &data[1], &data[2], &data[3]);
@@ -154,7 +100,11 @@ int * menu(int data[4]){
         break;
 
     default:
-        break;
+        system("cls");
+        printf("Попадаєте не по тим клавішам ? Спробуйте знову.");
+        Sleep(2500);
+        system("cls");
+        menu(data);
     }
 
     return data;
@@ -197,8 +147,10 @@ void fill_matrix(int P, int M, int N, int *** Arr3D, int type, int add){ // Функ
     }
 
     else if (type == 2){
+
         int upper = 100;
         int lower = 0;
+
         for (int p = 0; p < P + add; p++){
             for (int m = 0; m < M; m++){
                 for (int n = 0; n < N; n++){
@@ -226,9 +178,7 @@ clock_t Insert3(int P, int M, int N, int *** Arr3D){ // ???????? ?????????? ?3 ?
     clock_t time_start, time_stop;
 
     // ??'??? ?????? ???, ?????? ????????, ?????? ???????? ??? ??????, ?????????? ?????? ????????
-
-    int * SliceSum = (int *) malloc(sizeof(int) * (P + 1));
-    // int SliceSum[P + 1];
+    int SliceSum[P + 1];
     int KeySlice[M][N];
 
     time_start = clock();
@@ -278,8 +228,6 @@ clock_t Insert3(int P, int M, int N, int *** Arr3D){ // ???????? ?????????? ?3 ?
 
     time_stop = clock();
 
-    free(SliceSum);
-
     return time_stop - time_start;
 }
 
@@ -287,8 +235,8 @@ clock_t Select6(int P, int M, int N, int *** Arr3D){ // Алгоритм сортування №10 
 
     int imin, tmp;
     int temp_slice[M][N];
-    // int SliceSum[P];
-    int * SliceSum = (int *) malloc(sizeof(int) * P);
+    int SliceSum[P];
+
     clock_t time_start, time_stop;
     
     time_start = clock();
@@ -332,7 +280,7 @@ clock_t Select6(int P, int M, int N, int *** Arr3D){ // Алгоритм сортування №10 
     }
 
     time_stop = clock();
-    free(SliceSum);
+
     return time_stop - time_start;
 }
 
@@ -383,15 +331,13 @@ clock_t * QuickSortMeasurement(int P, int M, int N, int *** Arr3D, clock_t * Res
 
     int L = 0;
     int R = P - 1;
-    // int * SliceSum = (int *) malloc(sizeof(int) * P);
     int SliceSum[P];
+
     clock_t time_start, time_stop;
 
     for (int i = 0; i < MEASUREMENTS; i++){
 
         fill_matrix(P, M, N, Arr3D, type, 0);
-
-        time_start = clock();
 
         for (int i = 0; i < P; i++) {
             for (int j = 0; j < M; j++) {
@@ -401,13 +347,15 @@ clock_t * QuickSortMeasurement(int P, int M, int N, int *** Arr3D, clock_t * Res
             }
         }   
 
+        time_start = clock();
+
         QuickSort(M, N, Arr3D, SliceSum, L, R);
 
         time_stop = clock();
 
         Res[i] = time_stop - time_start;
     }
-    // free(SliceSum);
+
     return Res;
 }
 
@@ -426,7 +374,7 @@ float MeasurementProcessing(clock_t * Res){ // Усереднення результатів вимірюван
                 buf = Res[i];
                 Res[i] = Res[i + 1];
                 Res[i + 1] = buf;
-                k = i;     
+                k = i;
             }
         }
 
@@ -511,6 +459,7 @@ int main(){
         case 2: // Алгоритм 1 Тип сортування 2
 
             Arr3D = define_matrix(P, M, N, 1);
+
             for (int i = 0; i < MEASUREMENTS; i++){
                 fill_matrix(P, M, N, Arr3D, 2, 1);
                 Res[i] = Insert3(P, M, N, Arr3D);
