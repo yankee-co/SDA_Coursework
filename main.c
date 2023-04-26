@@ -8,6 +8,8 @@ int MEASUREMENTS = 16; // Кількість вимірів для кожного алгоритму і кожного типу
 int rejected_number = 4; // Кількість відкинутих перших вимірів
 int min_max_number = 4; // Кількість відкинутих екстремальних вимірів
 
+// Функція яка формує вибір варіанту виконання програми на основі введених юзером даних
+
 int * menu(int data[4]){
 
     int choice1, choice2; // Числа що відповідають за формування варіанту виконання програми на основі їх значень
@@ -37,11 +39,40 @@ int * menu(int data[4]){
 
     data[0] = choice_matrix[choice1 - 1][choice2 - 1];
     
+    printf("Оберіть предмет роботи програми:\n1. Одновимірний масив\n2. Тривимірний масив\n\n");
+    printf("Опція: ");
+    scanf("%d", &choice1);
+
+    if (choice1 == 1){
+
+        printf("Розмір масиву:\n1. 15000\n2. 5000\n\n");
+        printf("Опція: ");
+
+        scanf("%d ", &choice2);
+
+        if (choice2 < 1 || choice2 > 2){
+            printf("Невірно введені дані."); exit(0);
+        }
+
+        if (choice2 == 1)
+        {
+            data[1] = 15000;
+        }
+        else if (choice2 == 2){
+            data[1] = 5000;
+        }
+
+        data[2] = 0;
+        data[3] = 0;
+
+        return data;
+    }
+
     printf("\nОберіть розмірність матриці (P, M, N): \n");
     printf("Випадок дослідження 1. Форма перерізу - квадрат.\n\n");
     printf("1. 15000 x 1 x 1\n2. 15000 x 2 x 2\n3. 15000 x 4 x 4\n4. 15000 x 8 x 8\n5. 15000 x 16 x 16\n\n");
     printf("Випадок дослідження 2. Залежність часу роботи алгоритмів від форми перерізів масива\n\n");
-    printf("6. 12800 x 2 x 800\n7. 12800 x 4 x 400\n8. 12800 x 8 x 200\n9. 12800 x 16 x 100\n10. 12800 x 100 x 16\n11. 12800 x 100 x 8\n12. 12800 x 200 x 4\n13. 12800 x 800 x 2\n14. Задати розмірність власноруч\n\nОпція: ");
+    printf("6. 4000 x 2 x 800\n7. 4000 x 4 x 400\n8. 4000 x 8 x 200\n9. 4000 x 16 x 100\n10. 4000 x 100 x 16\n11. 4000 x 100 x 8\n12. 4000 x 200 x 4\n13. 4000 x 800 x 2\n14. Задати розмірність власноруч\n\nОпція: ");
     scanf("%d", &choice1);
 
     switch (choice1)
@@ -86,14 +117,14 @@ int * menu(int data[4]){
 
     case 6:
 
-        data[1] = 12800;
+        data[1] = 4000;
         data[2] = 2;
         data[3] = 800;
 
         break;
     case 7:
 
-        data[1] = 12800;
+        data[1] = 4000;
         data[2] = 4;
         data[3] = 400;
 
@@ -101,7 +132,7 @@ int * menu(int data[4]){
     
     case 8:
 
-        data[1] = 12800;
+        data[1] = 4000;
         data[2] = 8;
         data[3] = 200;
 
@@ -109,14 +140,14 @@ int * menu(int data[4]){
 
     case 9:
 
-        data[1] = 12800;
+        data[1] = 4000;
         data[2] = 16;
         data[3] = 100;
 
         break;
     case 10:
 
-        data[1] = 12800;
+        data[1] = 4000;
         data[2] = 100;
         data[3] = 16;
 
@@ -124,7 +155,7 @@ int * menu(int data[4]){
 
     case 11:
 
-        data[1] = 12800;
+        data[1] = 4000;
         data[2] = 200;
         data[3] = 8;
 
@@ -132,7 +163,7 @@ int * menu(int data[4]){
 
     case 12:
 
-        data[1] = 12800;
+        data[1] = 4000;
         data[2] = 400;
         data[3] = 4;
 
@@ -140,7 +171,7 @@ int * menu(int data[4]){
 
     case 13:
 
-        data[1] = 12800;
+        data[1] = 4000;
         data[2] = 800;
         data[3] = 2;
 
@@ -160,6 +191,9 @@ int * menu(int data[4]){
     return data;
 }
 
+// Функція що виділяє память для тривимірного масиву
+// int add - зсув для сортування Insert3 
+
 int *** define_matrix(int P, int M, int N, int add){ // Функція для виділення пам'яті під тривимірний масив
     int *** Arr3D = (int ***) malloc((P + add) * sizeof(int **));
     for (int k = 0; k < P + add; k++){
@@ -171,6 +205,9 @@ int *** define_matrix(int P, int M, int N, int add){ // Функція для виділення па
     return Arr3D;
 }
 
+// Функція що звільняє память виділену раніше для тривимірного масиву
+// int add - зсув для сортування Insert3 
+
 void free_memory(int P, int M, int N, int *** Arr3D, int add){ // Функція для звілення пам'яті виділеної під тривимірний масив
     for (int k = 0; k < P + add; k++){
         for (int i = 0; i < M; i++)
@@ -179,6 +216,10 @@ void free_memory(int P, int M, int N, int *** Arr3D, int add){ // Функція для зв
     }
     free(Arr3D);
 }
+
+// Функція яка заповнює матрицю числами.
+// int type - визначає впорядкованість
+// int add - зсув для сортування Insert3 
 
 void fill_matrix(int P, int M, int N, int *** Arr3D, int type, int add){ // Функція для заповнення матриці в залежності від обраного типу (впорядкована, невпорядкована, обернено впорядкована)
 
@@ -221,11 +262,48 @@ void fill_matrix(int P, int M, int N, int *** Arr3D, int type, int add){ // Функ
     }
 }
 
-clock_t Insert3(int P, int M, int N, int *** Arr3D){ // ???????? ?????????? ?3 ?????? ??? ? ???????????? ??????? ??????? ???????? ???????? ???????
+clock_t Insert3_Arr1D(int P){
 
     clock_t time_start, time_stop;
 
-    // ??'??? ?????? ???, ?????? ????????, ?????? ???????? ??? ??????, ?????????? ?????? ????????
+    // Масив для сум перерізів
+
+    int * Arr1D = (int *) malloc(sizeof(int) * (P + 1));
+
+    for (int p = 0; p < P + 1; p++){
+        Arr1D[p] = p - 1;
+    }
+
+    time_start = clock();
+
+    // Сортування
+    for (int i = 1; i < P; i++) {
+        int key = Arr1D[i];
+
+        int j = i - 1;
+        while (j >= 0 && Arr1D[j] > key) {
+            Arr1D[j + 1] = Arr1D[j];
+            j--;
+        }
+        Arr1D[j + 1] = key;
+
+    }
+
+    time_stop = clock();
+
+    free(Arr1D);
+
+    return time_stop - time_start;
+
+}
+
+// Алгоритм сортування вставками №3 з пошуком справа від елементу що вставляється або з бар'єром змінений для паралельного переміщення перерізів 
+
+clock_t Insert3(int P, int M, int N, int *** Arr3D){
+
+    clock_t time_start, time_stop;
+
+    // Масив для сум перерізів
 
     int * SliceSum = (int *) malloc(sizeof(int) * (P + 1));
     // int SliceSum[P + 1];
@@ -233,7 +311,7 @@ clock_t Insert3(int P, int M, int N, int *** Arr3D){ // ???????? ?????????? ?3 ?
 
     time_start = clock();
 
-    // ?????????? ?????? ???
+    // Заповнення масиву сумами перерізів
     for (int i = 1; i < P + 1; i++) {
         for (int j = 0; j < M; j++) {
             for (int k = 0; k < N; k++) {
@@ -242,7 +320,7 @@ clock_t Insert3(int P, int M, int N, int *** Arr3D){ // ???????? ?????????? ?3 ?
         }
     }
 
-    // ?????????? ?????? ??? ? ??????????? ???????????? ??????????? ????????
+    // Сортування
     for (int i = 1; i < P; i++) {
         int key = SliceSum[i];
 
@@ -272,8 +350,6 @@ clock_t Insert3(int P, int M, int N, int *** Arr3D){ // ???????? ?????????? ?3 ?
             }
         }
 
-        // ???????????? ??????????? ????????? ? ???????
-
     }
 
     time_stop = clock();
@@ -286,9 +362,9 @@ clock_t Insert3(int P, int M, int N, int *** Arr3D){ // ???????? ?????????? ?3 ?
 clock_t Select6(int P, int M, int N, int *** Arr3D){ // Алгоритм сортування №10 масиву сум з паралельними змінами порядку розрізів головної матриці
 
     int imin, tmp;
-    int temp_slice[M][N];
+    int temp_slice[M][N]; // матриця для тимчасового зберігання перерізу
     // int SliceSum[P];
-    int * SliceSum = (int *) malloc(sizeof(int) * P);
+    int * SliceSum = (int *) malloc(sizeof(int) * P); // Об'ява масиву сум, виділення пам'яті
     clock_t time_start, time_stop;
     
     time_start = clock();
@@ -302,6 +378,7 @@ clock_t Select6(int P, int M, int N, int *** Arr3D){ // Алгоритм сортування №10 
         }
     }
 
+    // Сортування
     for(int s = 0; s < P - 1; s++){
         imin = s;
         for(int i = s + 1; i < P; i++)
@@ -338,8 +415,8 @@ clock_t Select6(int P, int M, int N, int *** Arr3D){ // Алгоритм сортування №10 
 
 void QuickSort(int M, int N, int *** Arr3D, int * SliceSum, int L, int R){ // Алгоритм сортування №24 масиву сум з паралельними змінами порядку розрізів головної матриці
 
-    int B, tmp, i, j;
-    B = SliceSum[(L + R) / 2];
+    int B, tmp, i, j; // Змінні для сортування алгоритмом QuickSort
+    B = SliceSum[(L + R) / 2]; // Центральний опорний елемент поділу
     i = L; j = R;
 
     int temp_slice[M][N];
@@ -375,11 +452,11 @@ void QuickSort(int M, int N, int *** Arr3D, int * SliceSum, int L, int R){ // Ал
             j = j - 1;
         }
     }
-    if (L < j) QuickSort(M, N, Arr3D, SliceSum, L, j);
+    if (L < j) QuickSort(M, N, Arr3D, SliceSum, L, j); // Виклик для сортування меншої частини
     if (i < R) QuickSort(M, N, Arr3D, SliceSum, i, R);
 }
 
-clock_t * QuickSortMeasurement(int P, int M, int N, int *** Arr3D, clock_t * Res, int type){ // Функція для виміру часу витраченого на сортування алгоритмом 24
+clock_t * QuickSortMeasurement(int P, int M, int N, int *** Arr3D, clock_t * Res, int type){ // Функція для виміру часу витраченого на сортування алгоритмом №24 QuickSort
 
     int L = 0;
     int R = P - 1;
@@ -474,7 +551,7 @@ int main(){
 
     float measurements[9]; // Об'ява масиву усереднених результатів для виводу
 
-    int data[4];
+    int data[4]; // Дані вибору користувачем
 
     while (TRUE){ // Цикл для перезапуску програми
 
@@ -496,15 +573,24 @@ int main(){
         {
         case 1: // Алгоритм 1 Тип сортування 1
 
-            Arr3D = define_matrix(P, M, N, 1);
+            if (!M && !N){
 
-            for (int i = 0; i < MEASUREMENTS; i++){
-                fill_matrix(P, M, N, Arr3D, 1, 1);
-                Res[i] = Insert3(P, M, N, Arr3D);
+                Arr3D = define_matrix(P, M, N, 1);
+
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    fill_matrix(P, M, N, Arr3D, 1, 1);
+                    Res[i] = Insert3(P, M, N, Arr3D);
+                }
+                measurements[0] = MeasurementProcessing(Res);
+
+                free_memory(P, M, N, Arr3D, 1);
             }
-            measurements[0] = MeasurementProcessing(Res);
-
-            free_memory(P, M, N, Arr3D, 1);
+            else {
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    Res[i] = Insert3_Arr1D(P);
+                }
+                measurements[0] = MeasurementProcessing(Res);
+            }   
 
             break;
         
@@ -829,7 +915,7 @@ int main(){
             break;
         }
 
-        OutTable(measurements);
+        OutTable(measurements); // Вивід таблиці з даними
 
     }
     
