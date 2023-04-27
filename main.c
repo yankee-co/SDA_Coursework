@@ -27,31 +27,31 @@ int * menu(int data[4]){
     scanf("%d", &choice1);
 
     if (choice1 < 1 || choice1 > 4){
-        printf("Невірно введені дані."); exit(0);
+        printf("\nНевірно введені дані.\n"); exit(0);
     }
 
     printf("\nТип сортування:\n1. Впорядкований\n2. Невпорядкований\n3. Обернено впорядкований\n4. Всі типи сортування\n\nОберіть тип сортування: ");
     scanf("%d", &choice2);
 
     if (choice2 < 1 || choice2 > 4){
-        printf("Невірно введені дані."); exit(0);
+        printf("\nНевірно введені дані.\n"); exit(0);
     }
 
     data[0] = choice_matrix[choice1 - 1][choice2 - 1];
     
-    printf("Оберіть предмет роботи програми:\n1. Одновимірний масив\n2. Тривимірний масив\n\n");
+    printf("\nОберіть предмет роботи програми:\n1. Одновимірний масив\n2. Тривимірний масив\n\n");
     printf("Опція: ");
     scanf("%d", &choice1);
 
     if (choice1 == 1){
 
-        printf("Розмір масиву:\n1. 15000\n2. 5000\n\n");
+        printf("\nРозмір масиву:\n1. 15000\n2. 5000\n3. Задати власноруч\n\n");
         printf("Опція: ");
 
-        scanf("%d ", &choice2);
+        scanf("%d", &choice2);
 
-        if (choice2 < 1 || choice2 > 2){
-            printf("Невірно введені дані."); exit(0);
+        if (choice2 < 1 || choice2 > 3){
+            printf("\nНевірно введені дані.\n"); exit(0);
         }
 
         if (choice2 == 1)
@@ -60,6 +60,10 @@ int * menu(int data[4]){
         }
         else if (choice2 == 2){
             data[1] = 5000;
+        }
+        else if (choice2 == 3){
+            printf("\nВведіть значення довжини вектора (P): ");
+            scanf("%d", &data[1]);
         }
 
         data[2] = 0;
@@ -217,6 +221,18 @@ void free_memory(int P, int M, int N, int *** Arr3D, int add){ // Функція для зв
     free(Arr3D);
 }
 
+void display_matrix(int P, int M, int N, int *** Arr3D, int add){
+    for (int p = 0; p < P + add; p++){
+        for (int m = 0; m < M; m++){
+            for (int n = 0; n < N; n++){
+                printf("%d ", Arr3D[p][m][n]); 
+            }
+            printf("\n");
+        }
+        printf("\n\n");
+    }
+}
+
 // Функція яка заповнює матрицю числами.
 // int type - визначає впорядкованість
 // int add - зсув для сортування Insert3 
@@ -243,7 +259,7 @@ void fill_matrix(int P, int M, int N, int *** Arr3D, int type, int add){ // Функ
         for (int p = 0; p < P + add; p++){
             for (int m = 0; m < M; m++){
                 for (int n = 0; n < N; n++){
-                    Arr3D[p][m][n] = (rand() % (upper - lower + 1)) + lower;
+                    Arr3D[p][m][n] = rand() % (P*M*N);
                 }
             }
         }
@@ -262,39 +278,56 @@ void fill_matrix(int P, int M, int N, int *** Arr3D, int type, int add){ // Функ
     }
 }
 
-clock_t Insert3_Arr1D(int P){
+int * CreateVector(int P, int type, int add){
+    int * Vector = (int *) malloc(sizeof(int) * (P + add));
 
-    clock_t time_start, time_stop;
-
-    // Масив для сум перерізів
-
-    int * Arr1D = (int *) malloc(sizeof(int) * (P + 1));
-
-    for (int p = 0; p < P + 1; p++){
-        Arr1D[p] = p - 1;
+    // Заповнення
+    switch (type)
+    {
+    case 1:
+        for (int p = 0; p < P + add; p++){
+            Vector[p] = p - 1;
+        }
+        break;
+    case 2:
+        for (int p = 0; p < P + add; p++){
+            Vector[p] == rand() % P;
+        }
+        break;
+    case 3:
+        for (int p = (P + add); p > 0; p--){
+            Vector[p] = p;
+        }
+        break;
+    default:
+        break;
     }
+
+    return Vector;
+}
+
+// Алгоритм №3 для сортування вектора
+
+clock_t Insert3_Arr1D(int *Vector, int P)
+{
+    int j;
+    clock_t time_start, time_stop;
 
     time_start = clock();
 
-    // Сортування
-    for (int i = 1; i < P; i++) {
-        int key = Arr1D[i];
+    for(int i = 2; i < P + 1; i++){
+        Vector[0] = Vector[i];
+        j = i;
 
-        int j = i - 1;
-        while (j >= 0 && Arr1D[j] > key) {
-            Arr1D[j + 1] = Arr1D[j];
-            j--;
-        }
-        Arr1D[j + 1] = key;
-
+        while (Vector[0] < Vector[j-1]) {
+            Vector[j] = Vector[j - 1];
+            j = j - 1;
+            }
+            Vector[j] = Vector[0];
     }
-
     time_stop = clock();
 
-    free(Arr1D);
-
     return time_stop - time_start;
-
 }
 
 // Алгоритм сортування вставками №3 з пошуком справа від елементу що вставляється або з бар'єром змінений для паралельного переміщення перерізів 
@@ -359,6 +392,27 @@ clock_t Insert3(int P, int M, int N, int *** Arr3D){
     return time_stop - time_start;
 }
 
+// Алгоритм №10 для сортування вектора
+
+clock_t Select6_Arr1D(int *A, int N)
+{
+    int imin, tmp;
+    clock_t time_start, time_stop;
+    time_start = clock();
+    for(int s=0; s<N-1; s++){
+        imin=s;
+        for(int i=s+1; i<N; i++)
+            if (A[i]<A[imin]) imin=i;
+        if (imin!=s) {
+        tmp=A[imin];
+        A[imin]=A[s];
+        A[s]=tmp;
+        }
+    }
+    time_stop = clock();
+    return time_stop - time_start;
+}
+
 clock_t Select6(int P, int M, int N, int *** Arr3D){ // Алгоритм сортування №10 масиву сум з паралельними змінами порядку розрізів головної матриці
 
     int imin, tmp;
@@ -413,6 +467,46 @@ clock_t Select6(int P, int M, int N, int *** Arr3D){ // Алгоритм сортування №10 
     return time_stop - time_start;
 }
 
+// Алгоритм №24 для сортування вектора
+
+void QuickSort_Arr1D(int L, int R, int * Vector)
+{
+    int B, tmp, i, j;
+    B=Vector[(L+R)/2];
+    i=L; j=R;
+    while (i<=j) {
+        while (Vector[i] < B) i=i+1;
+        while (Vector[j] > B) j=j-1;
+        if (i<=j) {
+            tmp=Vector[i];
+            Vector[i]=Vector[j];
+            Vector[j]=tmp;
+            i=i+1;
+            j=j-1;
+        }
+    }
+    if (L<j) QuickSort_Arr1D(L,j, Vector);
+    if (i<R) QuickSort_Arr1D(i,R, Vector);
+}
+
+// Функція для виміру часу сортування вектора алгоритмом №24
+
+clock_t * QuickSortMeasurement_Arr1D(int P, clock_t * Res, int type, int add)
+{
+    clock_t time_start, time_stop;
+    for (int i=0; i < MEASUREMENTS; i++)
+    {
+        int * Vector = CreateVector(P, type, add);
+        time_start = clock();
+        QuickSort_Arr1D(0, P - 1, Vector);
+        time_stop = clock();
+        Res[i] = time_stop - time_start;
+        free(Vector);
+    }
+    
+    return Res;
+}
+
 void QuickSort(int M, int N, int *** Arr3D, int * SliceSum, int L, int R){ // Алгоритм сортування №24 масиву сум з паралельними змінами порядку розрізів головної матриці
 
     int B, tmp, i, j; // Змінні для сортування алгоритмом QuickSort
@@ -452,7 +546,7 @@ void QuickSort(int M, int N, int *** Arr3D, int * SliceSum, int L, int R){ // Ал
             j = j - 1;
         }
     }
-    if (L < j) QuickSort(M, N, Arr3D, SliceSum, L, j); // Виклик для сортування меншої частини
+    if (L < j) QuickSort(M, N, Arr3D, SliceSum, L, j); // Виклики для сортування менших частин
     if (i < R) QuickSort(M, N, Arr3D, SliceSum, i, R);
 }
 
@@ -460,8 +554,8 @@ clock_t * QuickSortMeasurement(int P, int M, int N, int *** Arr3D, clock_t * Res
 
     int L = 0;
     int R = P - 1;
-    // int * SliceSum = (int *) malloc(sizeof(int) * P);
-    int SliceSum[P];
+    int * SliceSum = (int *) malloc(sizeof(int) * P);
+    // int SliceSum[P];
     clock_t time_start, time_stop;
 
     for (int i = 0; i < MEASUREMENTS; i++){
@@ -484,7 +578,7 @@ clock_t * QuickSortMeasurement(int P, int M, int N, int *** Arr3D, clock_t * Res
 
         Res[i] = time_stop - time_start;
     }
-    // free(SliceSum);
+    free(SliceSum);
     return Res;
 }
 
@@ -586,328 +680,550 @@ int main(){
                 free_memory(P, M, N, Arr3D, 1);
             }
             else {
+                int * Vector = CreateVector(P, 1, 1);
                 for (int i = 0; i < MEASUREMENTS; i++){
-                    Res[i] = Insert3_Arr1D(P);
+                    Res[i] = Insert3_Arr1D(Vector, P);
                 }
                 measurements[0] = MeasurementProcessing(Res);
+
+                free(Vector);
             }   
 
             break;
         
         case 2: // Алгоритм 1 Тип сортування 2
+            if (!M && !N){
+                Arr3D = define_matrix(P, M, N, 1);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    fill_matrix(P, M, N, Arr3D, 2, 1);
+                    Res[i] = Insert3(P, M, N, Arr3D);
+                }
+                measurements[1] = MeasurementProcessing(Res);
+                display_matrix(P, M, N, Arr3D, 1);
+                free_memory(P, M, N, Arr3D, 1);
+            } else {
+                int * Vector = CreateVector(P, 2, 1);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    Res[i] = Insert3_Arr1D(Vector, P);
+                }
+                measurements[1] = MeasurementProcessing(Res);
 
-            Arr3D = define_matrix(P, M, N, 1);
-            for (int i = 0; i < MEASUREMENTS; i++){
-                fill_matrix(P, M, N, Arr3D, 2, 1);
-                Res[i] = Insert3(P, M, N, Arr3D);
+                free(Vector);
             }
-            measurements[1] = MeasurementProcessing(Res);
-
-            free_memory(P, M, N, Arr3D, 1);
-
             break;
 
         case 3: // Алгоритм 1 Тип сортування 3
+            if (!M && !N){
+                Arr3D = define_matrix(P, M, N, 1);
 
-            Arr3D = define_matrix(P, M, N, 1);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    fill_matrix(P, M, N, Arr3D, 3, 1);
+                    Res[i] = Insert3(P, M, N, Arr3D);
+                }
+                measurements[2] = MeasurementProcessing(Res);
 
-            for (int i = 0; i < MEASUREMENTS; i++){
-                fill_matrix(P, M, N, Arr3D, 3, 1);
-                Res[i] = Insert3(P, M, N, Arr3D);
+                free_memory(P, M, N, Arr3D, 1);
+            } else {
+                int * Vector = CreateVector(P, 3, 1);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    Res[i] = Insert3_Arr1D(Vector, P);
+                }
+                measurements[2] = MeasurementProcessing(Res);
+
+                free(Vector);
             }
-            measurements[2] = MeasurementProcessing(Res);
-
-            free_memory(P, M, N, Arr3D, 1);
-
             break;
         
         case 4: // Алгоритм 1 Всі типи сортування
 
-            Arr3D = define_matrix(P, M, N, 1);
+            if (!M && !N){
 
-            for (int i = 0; i < MEASUREMENTS; i++){
-                fill_matrix(P, M, N, Arr3D, 1, 1);
-                Res[i] = Insert3(P, M, N, Arr3D);
+                Arr3D = define_matrix(P, M, N, 1);
+
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    fill_matrix(P, M, N, Arr3D, 1, 1);
+                    Res[i] = Insert3(P, M, N, Arr3D);
+                }
+                measurements[0] = MeasurementProcessing(Res);
+
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    fill_matrix(P, M, N, Arr3D, 2, 1);
+                    Res[i] = Insert3(P, M, N, Arr3D);
+                }
+                measurements[1] = MeasurementProcessing(Res);
+
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    fill_matrix(P, M, N, Arr3D, 3, 1);
+                    Res[i] = Insert3(P, M, N, Arr3D);
+                }
+                measurements[2] = MeasurementProcessing(Res);
+
+                free_memory(P, M, N, Arr3D, 1);
+
+            } else {
+                int * Vector = CreateVector(P, 1, 1);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    Res[i] = Insert3_Arr1D(Vector, P);
+                }
+                measurements[0] = MeasurementProcessing(Res);
+
+                Vector = CreateVector(P, 2, 1);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    Res[i] = Insert3_Arr1D(Vector, P);
+                }
+                measurements[1] = MeasurementProcessing(Res);
+
+                Vector = CreateVector(P, 3, 1);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    Res[i] = Insert3_Arr1D(Vector, P);
+                }
+                measurements[2] = MeasurementProcessing(Res);
+
+                free(Vector);
             }
-            measurements[0] = MeasurementProcessing(Res);
 
-            for (int i = 0; i < MEASUREMENTS; i++){
-                fill_matrix(P, M, N, Arr3D, 2, 1);
-                Res[i] = Insert3(P, M, N, Arr3D);
-            }
-            measurements[1] = MeasurementProcessing(Res);
-
-            for (int i = 0; i < MEASUREMENTS; i++){
-                fill_matrix(P, M, N, Arr3D, 3, 1);
-                Res[i] = Insert3(P, M, N, Arr3D);
-            }
-            measurements[2] = MeasurementProcessing(Res);
-
-            free_memory(P, M, N, Arr3D, 1);
 
             break;
 
         case 5: // Алгоритм 2 Тип сортування 1
 
-            Arr3D = define_matrix(P, M, N, 0);
+            if (!M && !N){
 
-            for (int i = 0; i < MEASUREMENTS; i++){
-                fill_matrix(P, M, N, Arr3D, 1, 0);
-                Res[i] = Select6(P, M, N, Arr3D);
-            }
-            measurements[3] = MeasurementProcessing(Res);
+                Arr3D = define_matrix(P, M, N, 0);
 
-            free_memory(P, M, N, Arr3D, 0);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    fill_matrix(P, M, N, Arr3D, 1, 0);
+                    Res[i] = Select6(P, M, N, Arr3D);
+                }
+                measurements[3] = MeasurementProcessing(Res);
+
+                free_memory(P, M, N, Arr3D, 0);
+
+            } else {
+                int * Vector = CreateVector(P, 1, 0);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    Res[i] = Select6_Arr1D(Vector, P);
+                }
+                measurements[3] = MeasurementProcessing(Res);
+                
+                free(Vector);
+            }   
 
             break;
 
         case 6: // Алгоритм 2 Тип сортування 2
+            if (!M && !N){
+                Arr3D = define_matrix(P, M, N, 0);
 
-            Arr3D = define_matrix(P, M, N, 0);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    fill_matrix(P, M, N, Arr3D, 2, 0);
+                    Res[i] = Select6(P, M, N, Arr3D);
+                }
+                measurements[4] = MeasurementProcessing(Res);
 
-            for (int i = 0; i < MEASUREMENTS; i++){
-                fill_matrix(P, M, N, Arr3D, 2, 0);
-                Res[i] = Select6(P, M, N, Arr3D);
-            }
-            measurements[4] = MeasurementProcessing(Res);
+                free_memory(P, M, N, Arr3D, 0);
+            } else {
+                int * Vector = CreateVector(P, 2, 0);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    Res[i] = Select6_Arr1D(Vector, P);
+                }
+                measurements[4] = MeasurementProcessing(Res);
 
+                free(Vector);
+            }   
             break;
 
         case 7: // Алгоритм 2 Тип сортування 3
+            if (!M && !N){
+                Arr3D = define_matrix(P, M, N, 0);
 
-            Arr3D = define_matrix(P, M, N, 0);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    fill_matrix(P, M, N, Arr3D, 3, 0);
+                    Res[i] = Select6(P, M, N, Arr3D);
+                }
+                measurements[5] = MeasurementProcessing(Res);
 
-            for (int i = 0; i < MEASUREMENTS; i++){
-                fill_matrix(P, M, N, Arr3D, 3, 0);
-                Res[i] = Select6(P, M, N, Arr3D);
-            }
-            measurements[5] = MeasurementProcessing(Res);
+                free_memory(P, M, N, Arr3D, 0);
+                
+            } else {
+                int * Vector = CreateVector(P, 3, 0);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    Res[i] = Select6_Arr1D(Vector, P);
+                }
+                measurements[5] = MeasurementProcessing(Res);
 
+                free(Vector);
+            }  
             break;
         
         case 8: // Алгоритм 2 Всі типи сортування
+            if (!M && !N){
+                Arr3D = define_matrix(P, M, N, 0);
 
-            Arr3D = define_matrix(P, M, N, 0);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    fill_matrix(P, M, N, Arr3D, 1, 0);
+                    Res[i] = Select6(P, M, N, Arr3D);
+                }
+                measurements[3] = MeasurementProcessing(Res);
 
-            for (int i = 0; i < MEASUREMENTS; i++){
-                fill_matrix(P, M, N, Arr3D, 1, 0);
-                Res[i] = Select6(P, M, N, Arr3D);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    fill_matrix(P, M, N, Arr3D, 2, 0);
+                    Res[i] = Select6(P, M, N, Arr3D);
+                }
+                measurements[4] = MeasurementProcessing(Res);
+
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    fill_matrix(P, M, N, Arr3D, 3, 0);
+                    Res[i] = Select6(P, M, N, Arr3D);
+                }
+                measurements[5] = MeasurementProcessing(Res);
+
+                free_memory(P, M, N, Arr3D, 0);
+
+            } else {
+                int * Vector = CreateVector(P, 1, 0);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    Res[i] = Select6_Arr1D(Vector, P);
+                }
+                measurements[3] = MeasurementProcessing(Res);
+
+                Vector = CreateVector(P, 2, 0);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    Res[i] = Select6_Arr1D(Vector, P);
+                }
+                measurements[4] = MeasurementProcessing(Res);
+
+                Vector = CreateVector(P, 3, 0);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    Res[i] = Select6_Arr1D(Vector, P);
+                }
+                measurements[5] = MeasurementProcessing(Res);
+
+                free(Vector);
             }
-            measurements[3] = MeasurementProcessing(Res);
-
-            for (int i = 0; i < MEASUREMENTS; i++){
-                fill_matrix(P, M, N, Arr3D, 2, 0);
-                Res[i] = Select6(P, M, N, Arr3D);
-            }
-            measurements[4] = MeasurementProcessing(Res);
-
-           for (int i = 0; i < MEASUREMENTS; i++){
-                fill_matrix(P, M, N, Arr3D, 3, 0);
-                Res[i] = Select6(P, M, N, Arr3D);
-            }
-            measurements[5] = MeasurementProcessing(Res);
-
-            free_memory(P, M, N, Arr3D, 0);
 
             break;
         
         case 9: // Алгоритм 3 Тип сортування 1
+            if (!M && !N){
 
-            Arr3D = define_matrix(P, M, N, 0);
+                Arr3D = define_matrix(P, M, N, 0);
 
-            measurements[6] = MeasurementProcessing(
-            QuickSortMeasurement(P, M, N, Arr3D, Res, 1)
-            );
+                measurements[6] = MeasurementProcessing(
+                QuickSortMeasurement(P, M, N, Arr3D, Res, 1)
+                );
 
-            free_memory(P, M, N, Arr3D, 0);
+                free_memory(P, M, N, Arr3D, 0);
 
+            } else {
+
+                measurements[6] =  MeasurementProcessing(
+                QuickSortMeasurement_Arr1D(P, Res, 1, 0)
+                );
+
+            }
             break;
 
         case 10: // Алгоритм 3 Тип сортування 2
+            if (!M && !N){
 
-            Arr3D = define_matrix(P, M, N, 0);
+                Arr3D = define_matrix(P, M, N, 0);
 
-            measurements[7] = MeasurementProcessing(
-            QuickSortMeasurement(P, M, N, Arr3D, Res, 2)
-            );
-            
-            free_memory(P, M, N, Arr3D, 0);
+                measurements[7] = MeasurementProcessing(
+                QuickSortMeasurement(P, M, N, Arr3D, Res, 2)
+                );
+                
+                free_memory(P, M, N, Arr3D, 0);
 
+            } else {
+
+                measurements[7] = MeasurementProcessing(
+                QuickSortMeasurement_Arr1D(P, Res, 2, 0)
+                );
+            }
             break;
         
         case 11: // Алгоритм 3 Тип сортування 3
+            if (!M && !N){
+                Arr3D = define_matrix(P, M, N, 0);
+        
+                measurements[8] = MeasurementProcessing(
+                QuickSortMeasurement(P, M, N, Arr3D, Res, 3)
+                );
 
-            Arr3D = define_matrix(P, M, N, 0);
+                free_memory(P, M, N, Arr3D, 0);
 
-            measurements[8] = MeasurementProcessing(
-            QuickSortMeasurement(P, M, N, Arr3D, Res, 3)
-            );
+            } else {
+               
+                measurements[8] = MeasurementProcessing(
+                QuickSortMeasurement_Arr1D(P, Res, 3, 0)
+                );
 
-            free_memory(P, M, N, Arr3D, 0);
+            }
 
 
             break;
 
         case 12: // Алгоритм 3 Всі типи сортування
+            if (!M && !N){
+                Arr3D = define_matrix(P, M, N, 0);
 
-            Arr3D = define_matrix(P, M, N, 0);
+                fill_matrix(P, M, N, Arr3D, 1, 0);
+                measurements[6] = MeasurementProcessing(
+                QuickSortMeasurement(P, M, N, Arr3D, Res, 1)
+                );
 
-            measurements[6] = MeasurementProcessing(
-            QuickSortMeasurement(P, M, N, Arr3D, Res, 1)
-            );
+                fill_matrix(P, M, N, Arr3D, 2, 0);
+                measurements[7] = MeasurementProcessing(
+                QuickSortMeasurement(P, M, N, Arr3D, Res, 2)
+                );
 
-            fill_matrix(P, M, N, Arr3D, 2, 0);
-            measurements[7] = MeasurementProcessing(
-            QuickSortMeasurement(P, M, N, Arr3D, Res, 2)
-            );
+                fill_matrix(P, M, N, Arr3D, 3, 0);
+                measurements[8] = MeasurementProcessing(
+                QuickSortMeasurement(P, M, N, Arr3D, Res, 3)
+                );
 
-            fill_matrix(P, M, N, Arr3D, 3, 0);
-            measurements[8] = MeasurementProcessing(
-            QuickSortMeasurement(P, M, N, Arr3D, Res, 3)
-            );
+            } else {
+
+
+                measurements[6] = MeasurementProcessing(
+                QuickSortMeasurement_Arr1D(P, Res, 1, 0)
+                );
+
+                measurements[7] = MeasurementProcessing(
+                QuickSortMeasurement_Arr1D(P, Res, 2, 0)
+                );
+
+                measurements[8] = MeasurementProcessing(
+                QuickSortMeasurement_Arr1D(P, Res, 3, 0)
+                );
+                
+            }
             break;
 
         case 13: // Всі алгоритми, Тип сортування 1
+            if (!M && !N){
+                Arr3D = define_matrix(P, M, N, 1);
 
-            Arr3D = define_matrix(P, M, N, 1);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    fill_matrix(P, M, N, Arr3D, 1, 1);
+                    Res[i] = Insert3(P, M, N, Arr3D);
+                }
+                measurements[0] = MeasurementProcessing(Res);
 
-            for (int i = 0; i < MEASUREMENTS; i++){
-                fill_matrix(P, M, N, Arr3D, 1, 1);
-                Res[i] = Insert3(P, M, N, Arr3D);
+                free_memory(P, M, N, Arr3D, 1);
+
+                Arr3D = define_matrix(P, M, N, 0);
+
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    fill_matrix(P, M, N, Arr3D, 1, 0);
+                    Res[i] = Select6(P, M, N, Arr3D);
+                }
+                measurements[3] = MeasurementProcessing(Res);
+
+                measurements[6] = MeasurementProcessing(
+                QuickSortMeasurement(P, M, N, Arr3D, Res, 1)
+                );
+
+                free_memory(P, M, N, Arr3D, 0);
             }
-            measurements[0] = MeasurementProcessing(Res);
+            else {
+                int * Vector = CreateVector(P, 1, 1);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    Res[i] = Insert3_Arr1D(Vector, P);
+                }
+                measurements[0] = MeasurementProcessing(Res);
 
-            free_memory(P, M, N, Arr3D, 1);
+                free(Vector);
 
-            Arr3D = define_matrix(P, M, N, 0);
+                Vector = CreateVector(P, 1, 0);
 
-            for (int i = 0; i < MEASUREMENTS; i++){
-                fill_matrix(P, M, N, Arr3D, 1, 0);
-                Res[i] = Select6(P, M, N, Arr3D);
-            }
-            measurements[3] = MeasurementProcessing(Res);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    Res[i] = Insert3_Arr1D(Vector, P);
+                }
+                measurements[3] = MeasurementProcessing(Res);
 
-            measurements[6] = MeasurementProcessing(
-            QuickSortMeasurement(P, M, N, Arr3D, Res, 1)
-            );
+                free(Vector);
 
-            free_memory(P, M, N, Arr3D, 0);
+                measurements[6] = MeasurementProcessing(
+                QuickSortMeasurement_Arr1D(P, Res, 3, 0)
+                );
+            }   
 
             break;
 
         case 14: // Всі алгоритми, Тип сортування 2
+            if (!M && !N){
+                Arr3D = define_matrix(P, M, N, 1);
 
-            Arr3D = define_matrix(P, M, N, 1);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    fill_matrix(P, M, N, Arr3D, 2, 1);
+                    Res[i] = Insert3(P, M, N, Arr3D);
+                }
+                measurements[1] = MeasurementProcessing(Res);
 
-            for (int i = 0; i < MEASUREMENTS; i++){
-                fill_matrix(P, M, N, Arr3D, 2, 1);
-                Res[i] = Insert3(P, M, N, Arr3D);
-            }
-            measurements[1] = MeasurementProcessing(Res);
+                free_memory(P, M, N, Arr3D, 1);
 
-            free_memory(P, M, N, Arr3D, 1);
+                Arr3D = define_matrix(P, M, N, 0);
 
-            Arr3D = define_matrix(P, M, N, 0);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    fill_matrix(P, M, N, Arr3D, 2, 0);
+                    Res[i] = Select6(P, M, N, Arr3D);
+                }
+                measurements[4] = MeasurementProcessing(Res);
 
-            for (int i = 0; i < MEASUREMENTS; i++){
-                fill_matrix(P, M, N, Arr3D, 2, 0);
-                Res[i] = Select6(P, M, N, Arr3D);
-            }
-            measurements[4] = MeasurementProcessing(Res);
+                measurements[7] = MeasurementProcessing(
+                QuickSortMeasurement(P, M, N, Arr3D, Res, 2)
+                );
 
-            measurements[7] = MeasurementProcessing(
-            QuickSortMeasurement(P, M, N, Arr3D, Res, 2)
-            );
+                free_memory(P, M, N, Arr3D, 0);
 
-            free_memory(P, M, N, Arr3D, 0);
+            } else {
+
+                int * Vector = CreateVector(P, 2, 1);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    Res[i] = Insert3_Arr1D(Vector, P);
+                }
+                measurements[1] = MeasurementProcessing(Res);
+
+                free(Vector);
+
+                Vector = CreateVector(P, 2, 0);
+
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    Res[i] = Insert3_Arr1D(Vector, P);
+                }
+                measurements[4] = MeasurementProcessing(Res);
+
+                Vector = CreateVector(P, 2, 0);
+
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    Res[i] = Insert3_Arr1D(Vector, P);
+                }
+
+                free(Vector);
+
+                measurements[7] = MeasurementProcessing(
+                QuickSortMeasurement_Arr1D(P, Res, 2, 0)
+                );
+     
+            }   
 
             break;
 
         case 15: // Всі алгоритми, Тип сортування 3
+            if (!M && !N){
+                Arr3D = define_matrix(P, M, N, 1);
 
-            Arr3D = define_matrix(P, M, N, 1);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    fill_matrix(P, M, N, Arr3D, 3, 1);
+                    Res[i] = Insert3(P, M, N, Arr3D);
+                }
+                measurements[2] = MeasurementProcessing(Res);
 
-            for (int i = 0; i < MEASUREMENTS; i++){
-                fill_matrix(P, M, N, Arr3D, 3, 1);
-                Res[i] = Insert3(P, M, N, Arr3D);
-            }
-            measurements[2] = MeasurementProcessing(Res);
+                free_memory(P, M, N, Arr3D, 1);
 
-            free_memory(P, M, N, Arr3D, 1);
+                Arr3D = define_matrix(P, M, N, 0);
 
-            Arr3D = define_matrix(P, M, N, 0);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    fill_matrix(P, M, N, Arr3D, 3, 0);
+                    Res[i] = Select6(P, M, N, Arr3D);
+                }
+                measurements[5] = MeasurementProcessing(Res);
 
-            for (int i = 0; i < MEASUREMENTS; i++){
-                fill_matrix(P, M, N, Arr3D, 3, 0);
-                Res[i] = Select6(P, M, N, Arr3D);
-            }
-            measurements[5] = MeasurementProcessing(Res);
+                measurements[8] = MeasurementProcessing(
+                QuickSortMeasurement(P, M, N, Arr3D, Res, 3)
+                );
 
-            measurements[8] = MeasurementProcessing(
-            QuickSortMeasurement(P, M, N, Arr3D, Res, 3)
-            );
+                free_memory(P, M, N, Arr3D, 0);
 
-            free_memory(P, M, N, Arr3D, 0);
+            } else {
+
+                int * Vector = CreateVector(P, 3, 1);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    Res[i] = Insert3_Arr1D(Vector, P);
+                }
+                measurements[2] = MeasurementProcessing(Res);
+
+                free(Vector);
+
+                Vector = CreateVector(P, 3, 0);
+
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    Res[i] = Insert3_Arr1D(Vector, P);
+                }
+                measurements[5] = MeasurementProcessing(Res);
+
+                Vector = CreateVector(P, 3, 0);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    Res[i] = Select6_Arr1D(Vector, P);
+                }
+                measurements[8] = MeasurementProcessing(
+                QuickSortMeasurement_Arr1D(P, Res, 3, 0)
+                );
+
+                free(Vector);
+            }   
 
             break;
 
         case 16: // Всі алгоритми, Всі типи сортування
-            
-            Arr3D = define_matrix(P, M, N, 1);
+            if (!M && !N){
+                Arr3D = define_matrix(P, M, N, 1);
 
-            for (int i = 0; i < MEASUREMENTS; i++){
-                fill_matrix(P, M, N, Arr3D, 1, 0);
-                Res[i] = Insert3(P, M, N, Arr3D);
-            }
-            measurements[0] = MeasurementProcessing(Res);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    fill_matrix(P, M, N, Arr3D, 1, 1);
+                    Res[i] = Insert3(P, M, N, Arr3D);
+                }
+                measurements[0] = MeasurementProcessing(Res);
 
-            for (int i = 0; i < MEASUREMENTS; i++){
-                fill_matrix(P, M, N, Arr3D, 2, 0);
-                Res[i] = Insert3(P, M, N, Arr3D);
-            }
-            measurements[1] = MeasurementProcessing(Res);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    fill_matrix(P, M, N, Arr3D, 2, 1);
+                    Res[i] = Insert3(P, M, N, Arr3D);
+                }
+                measurements[1] = MeasurementProcessing(Res);
 
-            for (int i = 0; i < MEASUREMENTS; i++){
-                fill_matrix(P, M, N, Arr3D, 3, 0);
-                Res[i] = Insert3(P, M, N, Arr3D);
-            }
-            measurements[2] = MeasurementProcessing(Res);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    fill_matrix(P, M, N, Arr3D, 3, 1);
+                    Res[i] = Insert3(P, M, N, Arr3D);
+                }
+                measurements[2] = MeasurementProcessing(Res);
 
-            free_memory(P, M, N, Arr3D, 1);
+                free_memory(P, M, N, Arr3D, 1);
 
-            Arr3D = define_matrix(P, M, N, 0);
+                Arr3D = define_matrix(P, M, N, 0);
 
-            for (int i = 0; i < MEASUREMENTS; i++){
-                fill_matrix(P, M, N, Arr3D, 1, 0);
-                Res[i] = Select6(P, M, N, Arr3D);
-            }
-            measurements[3] = MeasurementProcessing(Res);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    fill_matrix(P, M, N, Arr3D, 1, 0);
+                    Res[i] = Select6(P, M, N, Arr3D);
+                }
+                measurements[3] = MeasurementProcessing(Res);
 
-            for (int i = 0; i < MEASUREMENTS; i++){
-                fill_matrix(P, M, N, Arr3D, 2, 0);
-                Res[i] = Select6(P, M, N, Arr3D);
-            }
-            measurements[4] = MeasurementProcessing(Res);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    fill_matrix(P, M, N, Arr3D, 2, 0);
+                    Res[i] = Select6(P, M, N, Arr3D);
+                }
+                measurements[4] = MeasurementProcessing(Res);
 
-            for (int i = 0; i < MEASUREMENTS; i++){
-                fill_matrix(P, M, N, Arr3D, 3, 0);
-                Res[i] = Select6(P, M, N, Arr3D);
-            }
-            measurements[5] = MeasurementProcessing(Res);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    fill_matrix(P, M, N, Arr3D, 3, 0);
+                    Res[i] = Select6(P, M, N, Arr3D);
+                }
+                measurements[5] = MeasurementProcessing(Res);
 
-            measurements[6] = MeasurementProcessing(
-            QuickSortMeasurement(P, M, N, Arr3D, Res, 1)
-            );
+                measurements[6] = MeasurementProcessing(
+                QuickSortMeasurement(P, M, N, Arr3D, Res, 1)
+                );
 
-            measurements[7] = MeasurementProcessing(
-            QuickSortMeasurement(P, M, N, Arr3D, Res, 2)
-            );
+                measurements[7] = MeasurementProcessing(
+                QuickSortMeasurement(P, M, N, Arr3D, Res, 2)
+                );
 
-            measurements[8] = MeasurementProcessing(
-            QuickSortMeasurement(P, M, N, Arr3D, Res, 3)
-            );
+                measurements[8] = MeasurementProcessing(
+                QuickSortMeasurement(P, M, N, Arr3D, Res, 3)
+                );
 
-            free_memory(P, M, N, Arr3D, 0);
+                free_memory(P, M, N, Arr3D, 0);
 
             break;
 
