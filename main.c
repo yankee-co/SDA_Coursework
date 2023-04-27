@@ -45,26 +45,8 @@ int * menu(int data[4]){
 
     if (choice1 == 1){
 
-        printf("\nРозмір масиву:\n1. 15000\n2. 5000\n3. Задати власноруч\n\n");
-        printf("Опція: ");
-
-        scanf("%d", &choice2);
-
-        if (choice2 < 1 || choice2 > 3){
-            printf("\nНевірно введені дані.\n"); exit(0);
-        }
-
-        if (choice2 == 1)
-        {
-            data[1] = 15000;
-        }
-        else if (choice2 == 2){
-            data[1] = 5000;
-        }
-        else if (choice2 == 3){
-            printf("\nВведіть значення довжини вектора (P): ");
-            scanf("%d", &data[1]);
-        }
+        printf("\nВведіть значення довжини вектора (P): ");
+        scanf("%d", &data[1]);
 
         data[2] = 0;
         data[3] = 0;
@@ -280,6 +262,7 @@ void fill_matrix(int P, int M, int N, int *** Arr3D, int type, int add){ // Функ
 
 int * CreateVector(int P, int type, int add){
     int * Vector = (int *) malloc(sizeof(int) * (P + add));
+    // int Vector[P+add];
 
     // Заповнення
     switch (type)
@@ -1224,12 +1207,67 @@ int main(){
                 );
 
                 free_memory(P, M, N, Arr3D, 0);
+            
+            } else{
+                int * Vector = CreateVector(P, 1, 1);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    Res[i] = Insert3_Arr1D(Vector, P);
+                }
+                measurements[0] = MeasurementProcessing(Res);
+
+                Vector = CreateVector(P, 2, 1);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    Res[i] = Insert3_Arr1D(Vector, P);
+                }
+                measurements[1] = MeasurementProcessing(Res);
+
+                Vector = CreateVector(P, 3, 1);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    Res[i] = Insert3_Arr1D(Vector, P);
+                }
+                measurements[2] = MeasurementProcessing(Res);
+
+                free(Vector);
+
+                Vector = CreateVector(P, 1, 0);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    Res[i] = Select6_Arr1D(Vector, P);
+                }
+                measurements[3] = MeasurementProcessing(Res);
+
+                Vector = CreateVector(P, 2, 0);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    Res[i] = Select6_Arr1D(Vector, P);
+                }
+                measurements[4] = MeasurementProcessing(Res);
+
+                Vector = CreateVector(P, 3, 0);
+                for (int i = 0; i < MEASUREMENTS; i++){
+                    Res[i] = Select6_Arr1D(Vector, P);
+                }
+                measurements[5] = MeasurementProcessing(Res);
+
+                free(Vector);
+
+                measurements[6] = MeasurementProcessing(
+                QuickSortMeasurement_Arr1D(P, Res, 1, 0)
+                );
+
+                measurements[7] = MeasurementProcessing(
+                QuickSortMeasurement_Arr1D(P, Res, 2, 0)
+                );
+
+                measurements[8] = MeasurementProcessing(
+                QuickSortMeasurement_Arr1D(P, Res, 3, 0)
+                );
+            }
 
             break;
 
         default:
             break;
         }
+        
 
         OutTable(measurements); // Вивід таблиці з даними
 
